@@ -5,3 +5,7 @@ main.css
 task.html
 normalize.css
 favicon.ico
+BaseEmail.pug
+WelcomeEmail.pug
+_style.pug
+

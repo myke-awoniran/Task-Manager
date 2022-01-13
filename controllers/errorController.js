@@ -6,7 +6,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleMongoError = (err) => {
-  const message = `Duplicate field :${err.keyValue.name}, Please use another value `;
+  const message = `Duplicate field(s), Please use another value `;
   return new AppError(message, 400);
 };
 
@@ -45,7 +45,7 @@ const sendErrProd = (err, res) => {
   } else {
     res.status(err.statusCode).json({
       status: 500,
-      Message: `something isn't working, Please  Try again`,
+      Message: `Something isn't working, Please Try again later while we work on it`,
     });
   }
 };
@@ -53,12 +53,18 @@ const sendErrProd = (err, res) => {
 exports.errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
+  if (process.env.NODE_ENV === 'development') {
+    sendErrDev(err, dev);
+  }
+};
 
+exports.errorHandler = (err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {
     sendErrDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
-
     if (err.name === 'ValidationError') error = handleValidationError(err);
     if (err.name === 'CastError') error = handleCastErrorDB(err);
     if (err.code === 11000) error = handleMongoError(err);

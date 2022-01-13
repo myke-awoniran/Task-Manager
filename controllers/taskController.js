@@ -1,7 +1,6 @@
 const Task = require('../models/taskModel');
 const catchAsync = require('../utils/catchAsync');
 const { response } = require('../utils/response');
-const errorController = require('../controllers/errorController');
 
 exports.getAllTasks = catchAsync(async (req, res, next) => {
   const tasks = await Task.find();

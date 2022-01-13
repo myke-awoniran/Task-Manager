@@ -1,12 +1,11 @@
 const Mongoose = require('mongoose');
-const errorController = require('../controllers/errorController');
+const User = require('./userModel');
 
 const taskSchema = Mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Task must have a name'],
     minlength: [8, 'task minimum length must be 8 characters'],
-    maxlength: [40, 'task name must not exceed 40 characters'],
   },
   description: String,
 
@@ -15,6 +14,10 @@ const taskSchema = Mongoose.Schema({
     default: Date.now,
   },
   taskCompleted: Boolean,
+  user: {
+    type: Mongoose.Schema.ObjectId,
+    ref: 'User',
+  },
 });
 
 const Task = Mongoose.model('Task', taskSchema);

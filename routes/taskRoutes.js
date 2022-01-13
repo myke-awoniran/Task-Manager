@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ extendParams: true });
 const taskControllers = require('../controllers/taskController');
 const authController = require('../controllers/authController');
 

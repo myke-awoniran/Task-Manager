@@ -1,12 +1,11 @@
 const Mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const errorController = require('../controllers/errorController');
+const crypto = require('crypto');
 const userSchema = Mongoose.Schema({
   name: {
     type: String,
     required: true,
     minlength: [10, 'minimum name character is 10'],
-    maxlength: [40, 'name must not exceed 40 character'],
   },
   email: {
     type: String,
@@ -54,6 +53,7 @@ const userSchema = Mongoose.Schema({
 });
 
 userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   next();
@@ -70,6 +70,7 @@ userSchema.methods.changedPassword = async function (tokenIssuedTime) {
   }
   return false;
 };
+
 userSchema.methods.generatePasswordResetToken = async function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto
@@ -79,5 +80,6 @@ userSchema.methods.generatePasswordResetToken = async function () {
   this.passwordResetExpires = Date.now() + 600000;
   return resetToken;
 };
+
 const User = Mongoose.model('User', userSchema);
 module.exports = User;
